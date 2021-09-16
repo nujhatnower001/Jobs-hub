@@ -34,7 +34,7 @@
                         <h2 class="form-title p-0 mb-2">Sign up</h2>
                         <small id="emailHelp" class="form-text text-muted mb-5">We'll never share your email with anyone else.</small>
 
-                        <form method="post" name="regform"  class="register-form" id="register-form" action="#">
+                        <form method="post" name="regform"  class="register-form" id="register-form" action="createacc.php">
   <div class="form-group">
   
    
@@ -111,7 +111,16 @@
 
 
   
+  
+ <?php
+ 
 
+
+if(isset($_GET['error']))
+   echo $_GET['error'];
+  
+
+?>
                     </div>
 
                     <div class="signup-image">
@@ -119,7 +128,7 @@
 
                         <figure><img src="../assets/images/create ac company.svg" alt="sing up image"></figure>
                         
-                         <a class="form-text text-muted" href="company_login.html">  <i class="fas fa-user"></i>  I am already a member </a> 
+                         <a class="form-text text-muted" href="company_login.php">  <i class="fas fa-user"></i>  I am already a member </a> 
                     </div>
                 </div>
             </div>
