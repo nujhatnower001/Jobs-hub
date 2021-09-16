@@ -1,3 +1,74 @@
+<?php 
+session_start();
+
+
+if(isset($_SESSION['email'])) {
+$email = $_SESSION["email"];
+$admin = $_SESSION["utype"];
+
+}
+else{
+  header("location: ../account/logout.php");
+}
+
+?>
+
+
+
+
+<?php
+
+$conn = new mysqli("localhost", "root", "", "jobs_hub");
+
+
+
+
+$result=mysqli_query($conn,"SELECT * FROM company,job_post WHERE job_post.company_id=company.id");
+//$result2=mysqli_query($conn,"SELECT * FROM company,job_post WHERE job_post.company_id=company.id");
+$result3 = mysqli_query($conn,"SELECT * FROM job_post group by job_catagory order by COUNT(job_catagory) desc");
+$result12=mysqli_query($conn,"SELECT * FROM post_reviews");
+
+?>
+
+
+       <?php
+$conn = new mysqli("localhost", "root", "", "jobs_hub");
+$query = "SELECT COUNT( *) as Number
+   FROM job_post";
+$result16 = mysqli_query($conn,$query);
+while ($row = $result16->fetch_assoc()) {
+$rxx = $row["Number"];
+
+}
+
+$query = "SELECT COUNT( *) as Num
+   FROM seeker_profile";
+$result17 = mysqli_query($conn,$query);
+while ($row = $result17->fetch_assoc()) {
+$seeker = $row["Num"];
+
+}
+
+$query = "SELECT COUNT( *) as Numb
+   FROM company";
+$result18 = mysqli_query($conn,$query);
+while ($row = $result18->fetch_assoc()) {
+$com = $row["Numb"];
+
+}
+
+$query = "SELECT COUNT( *) as No
+   FROM post_reviews";
+$result19 = mysqli_query($conn,$query);
+while ($row = $result19->fetch_assoc()) {
+$rev = $row["No"];
+
+}
+
+?>
+         
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +78,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="The Right Job" />
+    <meta name="description" content="Jobs Hub" />
 
     <!-- title  -->
     <title>Jobs Hub</title>
@@ -32,6 +103,33 @@
 />
 <!-- Google Fonts -->
 
+<script>
+"use strict";
+
+!function() {
+  var t = window.driftt = window.drift = window.driftt || [];
+  if (!t.init) {
+    if (t.invoked) return void (window.console && console.error && console.error("Drift snippet included twice."));
+    t.invoked = !0, t.methods = [ "identify", "config", "track", "reset", "debug", "show", "ping", "page", "hide", "off", "on" ], 
+    t.factory = function(e) {
+      return function() {
+        var n = Array.prototype.slice.call(arguments);
+        return n.unshift(e), t.push(n), t;
+      };
+    }, t.methods.forEach(function(e) {
+      t[e] = t.factory(e);
+    }), t.load = function(t) {
+      var e = 3e5, n = Math.ceil(new Date() / e) * e, o = document.createElement("script");
+      o.type = "text/javascript", o.async = !0, o.crossorigin = "anonymous", o.src = "https://js.driftt.com/include/" + n + "/" + t + ".js";
+      var i = document.getElementsByTagName("script")[0];
+      i.parentNode.insertBefore(o, i);
+    };
+  }
+}();
+drift.SNIPPET_VERSION = '0.3.1';
+drift.load('9rf6ri8mzizg');
+</script>
+
 
 
 </head>
@@ -40,7 +138,9 @@
 
   
 
-   
+    <!-- start main-wrapper section -->
+    <!-- <div class="main-wrapper"> -->
+
         <!-- start header section -->
         <header>
             <div class="navbar-default">
@@ -64,27 +164,54 @@
   </button>
 
 
+
+                                    <!-- start menu area -->
                                     <ul class="navbar-nav ml-auto" id="nav" style="display: none;">
-                                        <li><a href="home.html">Home</a></li>
+                                        <li><a href="home.php">Home</a></li>
                                      
-                                
+                                             <?php
+
+                                        if(isset($_SESSION['utype']))
+                                        {
+
+                                          if ($admin=="jobseeker") {
+   
+                                            echo '
+                                         <li><a href="profile.php">Dashboard</a></li>
+                                        <li><a href="jobs_list.php">jobs list</a></li>
+                                        
+
+                                        <li><a href="post_review.php">Post a review</a></li>
+                                         <li><a href="../account/logout.php" class="btn btn-warning p-3" >Logout</a></li>';
+                                          }
+                                          elseif($admin=="company"){
+
+                                          echo '<li><a href="post_job.php">Post a job</a></li>
+                            
+                                       
+                                        
+
+                                        <li><a href="company-profile.php">Company dashboard</a></li>
+                                         <li><a href="../account/logout.php" class="btn btn-warning p-3" >Logout</a></li>';
+                                          }        
+
+                                    }
+
+                                    ?>
                                         
                                       
                                         
-                                        <li><a href="">Post a Job</a></li>
-                                          <li><a href="">Jobseeker Dashboard</a></li>
-                                         
-                                        
-                                        <li><a href="">Company dashboard</a></li>
-                                        
-                                       
-                                          <li><a href="#" class="btn btn-warning p-3" >Logout</a></li> 
-                                                                                            
-
-       
-                                        
+                                                                                                     
                                     </ul>
-                          
+                                    <!-- end menu area -->
+
+   
+    
+    
+               
+
+   
+
 
                             </div>
                         </div>
@@ -96,7 +223,15 @@
 
 
                <span>
-         
+            <?php
+ 
+
+
+                  if(isset($_GET['error']))
+                   echo $_GET['error'];
+   
+ 
+                 ?>
               </span>
 
         <!-- start banner -->
@@ -108,11 +243,38 @@
                     <div class="col-12 header-text display-table h-100 z-index-1 width-100">
                         <div class="display-table-cell vertical-align-middle text-center">
 
-                             <p class="font-size18 xs-font-size16 text-white letter-spacing-1 margin-15px-bottom">logged in as nujhat.nower@northsouth.edu</p>
+                             <p class="font-size18 xs-font-size16 text-white letter-spacing-1 margin-15px-bottom">logged in as <?php echo $email;?></p>
+                            <?php
 
-                           
+                             if ($admin=="jobseeker") {
+   
+    
+
 
                             
+                           $conn = new mysqli("localhost", "root", "", "jobs_hub");
+                            $query = "select id from user_account where email ='".$_SESSION['email']."'";
+                            $result6 = mysqli_query($conn,$query);
+                            while ($row = $result6->fetch_assoc()) {
+                                $id = $row['id']; 
+                                
+                            }
+                           
+                         
+                            $query2 = "select picFile from seeker_profile where user_id =$id";
+                            $result7 = mysqli_query($conn,$query2);
+                            while ($row2 = $result7->fetch_assoc()) {
+                                $picFile = $row2['picFile']; 
+                                
+                            
+                        
+
+                           echo '<img class="img-responsive img-circle img-thumbnail" src="data:image/png;base64,'.base64_encode($row2['picFile']).'" width="85" height="85"   />';
+
+                       }
+
+                   }
+                           ?>
                                        
                             
                             <h1 class="cd-headline slide">
@@ -161,7 +323,10 @@
                 </div>
             
             <div class="row">
-         
+            <?php
+                    $i=0;
+                    while($row = mysqli_fetch_array($result3)) {
+                    ?>
                 <div class="col-lg-4 col-md-6 margin-30px-bottom">
                     <div class="card text-dark border-color-light-black h-100">
                     <div class="card-body padding-20px-tb padding-30px-lr">
@@ -174,61 +339,29 @@
 
                                     </div>
                                     <div>
-                                        <h5 class="no-margin-bottom font-size20">Intern<a href="#" class="text-extra-dark-gray">
-
-                                        
-                                        <a href="#" class="company-btn">56 Open Positions</a>
-                                    </div>
-                                </div>
-
-                    </div>
-                </div>
-                 </div>
-                   <div class="col-lg-4 col-md-6 margin-30px-bottom">
-                    <div class="card text-dark border-color-light-black h-100">
-                    <div class="card-body padding-20px-tb padding-30px-lr">
-                      
-                                                   
-                        
-                        <div class="d-flex align-items-center">
-                                    <div class="margin-30px-right top-company">
-                                        <img src="img/content/job-1.png" alt="" />
-
-                                    </div>
-                                    <div>
-                                        <h5 class="no-margin-bottom font-size20">Full stack developer<a href="#" class="text-extra-dark-gray">
-
-                                        
-                                        <a href="#" class="company-btn">18 Open Positions</a>
-                                    </div>
-                                </div>
+                                        <h5 class="no-margin-bottom font-size20"><a href="jobs_list.php" class="text-extra-dark-gray"><?php echo $row["job_catagory"]; $jc = $row["job_catagory"]; ?></a></h5>
+                                       
+                                         <?php
+                           $conn = new mysqli("localhost", "root", "", "jobs_hub");
+                            $query = "SELECT COUNT(job_catagory) FROM job_post where `job_catagory` ='$jc'";
+                            $result4 = mysqli_query($conn,$query);
+                            while ($row = $result4->fetch_assoc()) {
+                                $rx = $row["COUNT(job_catagory)"];
                                 
-                    </div>
-                </div>
-                 </div>
-                   <div class="col-lg-4 col-md-6 margin-30px-bottom">
-                    <div class="card text-dark border-color-light-black h-100">
-                    <div class="card-body padding-20px-tb padding-30px-lr">
-                      
-                                                   
-                        
-                        <div class="d-flex align-items-center">
-                                    <div class="margin-30px-right top-company">
-                                        <img src="img/content/job-1.png" alt="" />
-
-                                    </div>
-                                    <div>
-                                        <h5 class="no-margin-bottom font-size20">Marketing<a href="#" class="text-extra-dark-gray">
+                            }
+                            ?>
 
                                         
-                                        <a href="#" class="company-btn">61 Open Positions</a>
+                                        <a href="#" class="company-btn"><?php echo $rx;?> Open Positions</a>
                                     </div>
                                 </div>
-                                
                     </div>
                 </div>
                  </div>
-              
+                 <?php
+                        $i++;
+                        }
+                        ?>
                  </div>
             </div>
         </section>
@@ -249,11 +382,26 @@
 
                      
                     <div class="col-md-12"> 
-                  
-                            <div class='card'>
+                      <?php
+                    $i=0;
+                    while($row = mysqli_fetch_array($result)) {
+                         $jpost = $row['id'];
+                           $company_id = $row['company_id'];
+                           $job_description = $row['job_description'];
+                                $job_type = $row['job_type'];
+                                $salary = $row['salary'];
+                                 $position = $row['position'];
+                                 $vacancy = $row['vacancy'];
+                                 $expectation = $row['expectation'];
+                                 $job_location = $row['job_location'];
+                                 $company_name = $row['company_name'];
+                                  $deadline = $row['deadline'];
+
+                                
+                            echo "<div class='card'>
                                  
 
-                       <a class='text-dark border-color-light-black margin-30px-bottom' href='#'>
+                       <a class='text-dark border-color-light-black margin-30px-bottom' href='job-details.php?jobid=$jpost&cid=$company_id'>
                            <div class='card-body padding-20px-tb padding-30px-lr'>
                                 <div class='row justify-content-sm-between align-items-sm-center'>
                                     <div class='col-md-6 xs-margin-10px-bottom'>
@@ -265,10 +413,10 @@
                                             <div>
 
 
-                                                <span class='text-secondary'>Position: Intern </span>
-                                            <br>Company name:  Brain station 23
+                                                <span class='text-secondary'>Position: {$position}</span>
+                                            <br>Company name: {$company_name}
 
-                                               <br>Salary: 5000
+                                               <br>Salary: ৳{$salary}
                                              
 
                                             </div>
@@ -281,55 +429,11 @@
 
 
                               <div class=' col-md-3 text-secondary xs-margin-10px-bottom'>
-                                        <span class='ti-location-pin margin-10px-right'></span><i class='fas fa-location-arrow'>Farmgate, dhaka</i> 
-                                        <br><i class='fas fa-clock'></i> 
-                                           <br>Deadline: 28/9/2021 
-                                    </div>
-                                    
-                                     <div class='col-md-3 col-xl-2 text-primary text-left text-md-right'>
-                                        Read details →
-                                    </div>
-                            
-                                </div>
-                            </div>
-                        </a>
-                        </div>
-                   
-                    <div class='card'>
-                                 
-
-                       <a class='text-dark border-color-light-black margin-30px-bottom' href='#'>
-                           <div class='card-body padding-20px-tb padding-30px-lr'>
-                                <div class='row justify-content-sm-between align-items-sm-center'>
-                                    <div class='col-md-6 xs-margin-10px-bottom'>
-                                        <div class='d-block d-sm-flex align-items-center'>
-                                            <div class='job-icon bg-light mobile-no-margin-right mobile-margin-20px-bottom margin-30px-right'>
-                                                <img src='https://img.icons8.com/fluency/48/000000/new-job.png'/>
-                                            </div>
-                                           
-                                            <div>
-
-
-                                                <span class='text-secondary'>Position: Intern </span>
-                                            <br>Company name:  Brain station 23
-
-                                               <br>Salary: 5000
-                                             
-
-                                            </div>
-
-
-                                            
-                                        </div>
+                                        <span class='ti-location-pin margin-10px-right'></span><i class='fas fa-location-arrow'></i> {$job_location}
+                                        <br><i class='fas fa-clock'></i> {$job_type}
+                                           <br>Deadline: {$deadline}
                                         
                                     </div>
-
-
-                              <div class=' col-md-3 text-secondary xs-margin-10px-bottom'>
-                                        <span class='ti-location-pin margin-10px-right'></span><i class='fas fa-location-arrow'>Farmgate, dhaka</i> 
-                                        <br><i class='fas fa-clock'></i> 
-                                           <br>Deadline: 28/9/2021 
-                                    </div>
                                     
                                      <div class='col-md-3 col-xl-2 text-primary text-left text-md-right'>
                                         Read details →
@@ -338,52 +442,11 @@
                                 </div>
                             </div>
                         </a>
-                        </div>
-                    <div class='card'>
-                                 
-
-                       <a class='text-dark border-color-light-black margin-30px-bottom' href='#'>
-                           <div class='card-body padding-20px-tb padding-30px-lr'>
-                                <div class='row justify-content-sm-between align-items-sm-center'>
-                                    <div class='col-md-6 xs-margin-10px-bottom'>
-                                        <div class='d-block d-sm-flex align-items-center'>
-                                            <div class='job-icon bg-light mobile-no-margin-right mobile-margin-20px-bottom margin-30px-right'>
-                                                <img src='https://img.icons8.com/fluency/48/000000/new-job.png'/>
-                                            </div>
-                                           
-                                            <div>
-
-
-                                                <span class='text-secondary'>Position: Intern </span>
-                                            <br>Company name:  Brain station 23
-
-                                               <br>Salary: 5000
-                                             
-
-                                            </div>
-
-
-                                            
-                                        </div>
-                                        
-                                    </div>
-
-
-                              <div class=' col-md-3 text-secondary xs-margin-10px-bottom'>
-                                        <span class='ti-location-pin margin-10px-right'></span><i class='fas fa-location-arrow'>Farmgate, dhaka</i> 
-                                        <br><i class='fas fa-clock'></i> 
-                                           <br>Deadline: 28/9/2021 
-                                    </div>
-                                    
-                                     <div class='col-md-3 col-xl-2 text-primary text-left text-md-right'>
-                                        Read details →
-                                    </div>
-                            
-                                </div>
-                            </div>
-                        </a>
-                        </div>
-                   
+                        </div>"
+                        ;
+                      }
+                           
+                                    ?>
                        
                       
                        
@@ -402,21 +465,28 @@
             <div class="col-md-12">
                 <div id="testimonial-slider" class="owl-carousel">
 
-     
+                                  <?php
+      $i=0;
+      while($row = mysqli_fetch_array($result12)) {
+      ?>
                     <div class="testimonial">
                         <div class="testimonial-content">
                             <div class="testimonial-icon">
                                 <i class="fa fa-quote-left"></i>
                             </div>
                             <p class="description">
-                             
+                               <?php echo $row["ambience"]; ?>
                             </p>
                         </div>
-                        <h3 class="title">Brain station 23</h3>
+                        <h3 class="title"><?php echo $row["company_name"]; ?></h3>
                     
-                        <span class="post"><i class="fas fa-star"></i>5</span>
+                        <span class="post"><i class="fas fa-star"></i><?php echo $row["rating"]; ?></span>
                     </div>
-              
+                       <?php
+                $i++;
+                }
+                ?>
+
 
  
                  
@@ -425,7 +495,6 @@
     </div>
 </div>
 
-        <!-- start counter section -->
         <section class="bg-light2">
             <div class="container">
                 <div class="row">
@@ -434,7 +503,9 @@
                             <div class="margin-20px-bottom">
                                 <span class="ti-package font-size24 text-theme-color"></span>
                             </div>
-                            <h5 class="countup font-size30 no-margin-bottom">12376</h5>
+
+               
+                            <h5 class="countup font-size30 no-margin-bottom"><?php echo $rxx;?></h5>
                             <p class="no-margin-bottom text-extra-dark-gray font-weight-600">Live Jobs</p>
                         </div>
                     </div>
@@ -443,7 +514,7 @@
                             <div class="margin-20px-bottom">
                                 <span class="ti-user font-size24 text-theme-color"></span>
                             </div>
-                            <h5 class="countup font-size30 no-margin-bottom">89562</h5>
+                            <h5 class="countup font-size30 no-margin-bottom"><?php echo $seeker;?></h5>
                             <p class="no-margin-bottom text-extra-dark-gray font-weight-600">Candidate</p>
                         </div>
                     </div>
@@ -452,7 +523,7 @@
                             <div class="margin-20px-bottom">
                                 <span class="ti-files font-size24 text-theme-color"></span>
                             </div>
-                            <h5 class="countup font-size30 no-margin-bottom">28166</h5>
+                            <h5 class="countup font-size30 no-margin-bottom"><?php echo $rev;?></h5>
                             <p class="no-margin-bottom text-extra-dark-gray font-weight-600">Resume</p>
                         </div>
                     </div>
@@ -461,14 +532,13 @@
                             <div class="margin-20px-bottom">
                                 <span class="ti-medall-alt font-size24 text-theme-color"></span>
                             </div>
-                            <h5 class="countup font-size30 no-margin-bottom">1366</h5>
+                            <h5 class="countup font-size30 no-margin-bottom"><?php echo $com;?></h5>
                             <p class="no-margin-bottom text-extra-dark-gray font-weight-600">Companies</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        <!-- end counter section -->
 
 
        
@@ -476,6 +546,8 @@
      
 
     </div>
+
+
   
 
     <!-- all js include start -->
@@ -483,7 +555,8 @@
     <!-- jQuery -->
     <script src="js/core.min.js"></script>
 
- 
+    <!-- Serch -->
+    <script src="search/search.js"></script>
 
     <!-- custom scripts -->
     <script src="js/main.js"></script>
@@ -492,6 +565,35 @@
 
 </body>
 
+ <script>
+  $(document).ready(function(){
+    load_data();
+    function load_data(query)
+    {
+      $.ajax({
+        url:"fetch.php",
+        method:"post",
+        data:{query:query},
+        success:function(data)
+        {
+          $('#result').html(data);
+        }
+      });
+    }
+
+    $('#search_text').keyup(function(){
+      var search = $(this).val();
+      if(search != '')
+      {
+        load_data(search);
+      }
+      else
+      {
+        load_data();
+      }
+    });
+  });
+  </script>
 
 
 

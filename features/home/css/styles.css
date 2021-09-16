@@ -464,7 +464,9 @@ ul.countdown li p.timeRefSeconds {
   transform: scale(1.01);
 }
 
-
+body{
+    background: #fff;
+}
 .emp-profile{
     padding: 3%;
     margin-top: 3%;

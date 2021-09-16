@@ -1,3 +1,70 @@
+<?php 
+session_start();
+
+
+
+$admin="";
+$email = $_SESSION["email"];
+
+if(isset($_SESSION['utype']))
+{
+   $admin = $_SESSION["utype"]; 
+
+
+
+
+if ($admin=="company") {
+    $error = '<div class="alert alert-danger">Profile dashboard is only for jobseeker</div>';
+    session_destroy();
+   
+    header("location: ../account/jobseeker/jobseeker_login.php?error=$error");
+
+}
+else{
+
+        
+    }
+}else{
+     $error = '<div class="alert alert-danger">Please register to use tha feature</div>';
+      header("location: ../account/home.php?error=$error");
+}
+
+   
+
+?>
+
+
+<?php
+                           $conn = new mysqli("localhost", "root", "", "jobs_hub");
+                            $query = "select id from user_account where email ='".$_SESSION['email']."'";
+                            $result6 = mysqli_query($conn,$query);
+                            while ($row = $result6->fetch_assoc()) {
+                                $id = $row['id']; 
+                                
+                            }
+                            ?>
+
+
+
+
+<?php
+
+$conn = new mysqli("localhost", "root", "", "jobs_hub");
+
+
+
+
+$result7=mysqli_query($conn,"SELECT * FROM seeker_profile where user_id = $id");
+
+$query = "SELECT COUNT( *) as Num
+   FROM seeker_profile";
+$result17 = mysqli_query($conn,$query);
+while ($row = $result17->fetch_assoc()) {
+$seeker = $row["Num"];
+
+}
+
+?>
 
 
 <!DOCTYPE html>
@@ -5,7 +72,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Job details</title>
+	<title>Profile dashboard</title>
       <!-- plugins -->
     <link rel="stylesheet" href="css/plugins.css" />
 
@@ -13,7 +80,7 @@
 
     <!-- core style css -->
     <link href="css/styles.css" rel="stylesheet" />
-	<link rel="stylesheet" href="style.css">
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>
@@ -41,16 +108,17 @@
 
                                     <!-- start menu area -->
                                     <ul class="navbar-nav ml-auto" id="nav" style="display: none;">
-                                        <li><a href="home.html">Home</a></li>
+                                        <li><a href="home.php">Home</a></li>
                                      
+                                      <li><a href="update_profile.php">Create profile</a></li>
                                 
-                                        <li><a href="profile.html">Profile</a></li>
+                                        <li><a href="profile.php">Profile</a></li>
                                       
-                                     
-                                        <li><a href="">Post a Job</a></li>
-                                        <li><a href="">Post a review</a></li>
+                                        <li><a href="jobs_list.php">jobs list</a></li>
+                                    
+                                        <li><a href="post_review.php">Post a review</a></li>
                                        
-                                          <li><a href="" class="btn btn-warning p-3" >Logout</a></li>
+                                          <li><a href="../account/logout.php" class="btn btn-warning p-3" >Logout</a></li>
                                         
                                     </ul>
                                     <!-- end menu area -->
@@ -65,7 +133,15 @@
             </div>
         </header>
              <span>
-         
+            <?php
+ 
+
+
+                  if(isset($_GET['error']))
+                   echo $_GET['error'];
+   
+ 
+                 ?>
               </span>
         <!-- end header section -->
 
@@ -76,12 +152,13 @@
             <div class="row">
                 <div class="col-xl-5">
                     <div class="bradcam_text">
-                        <h3>Job details</h3>
+                        <h3>Profile dashboard</h3>
                         
       
                             
-                            <h3 style="color: #485460" class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".2s"> 100+ jobs listed</h3>
-                           
+                            <h3 style="color: #485460" class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".2s"> <?php echo $seeker ;?> profile listed</h3>
+                             
+                    
                     </div>
                 </div>
 
@@ -106,32 +183,59 @@
             <form method="post">
                 <div class="row">
 
+                         <?php
+      $i=0;
+      while($row = mysqli_fetch_array($result7)) {
+        $user_id = $row['user_id'];
+          $first_name = $row['first_name'];
+          $last_name = $row['last_name'];
+              $age = $row['age'];
+               $curent_job = $row['curent_job'];
+               $school = $row['school'];
+                $collage = $row['collage'];
+                $uni_name = $row['uni_name'];
+                $ssc_gpa = $row['ssc_gpa'];
+                        $hsc_gpa = $row['hsc_gpa'];
+                                $uni_cgpa = $row['uni_cgpa'];
+                              
+
+               echo     '<div class="col-md-4">
+                        <div class="profile-img">
+                            <img class="img d-flex justify-content-end" src="data:image/png;base64,'.base64_encode($row['picFile']).'" alt="Profile image">
+                            
+                        </div>
                     </div>
                     <div class="col-md-6 mb-n5">
                         <div class="profile-head">
                                     <h5>
-                                       Brain Station
+                                        '.$row['first_name'].'
                                     </h5>
                                   
                                   
-                                   
-                          
+                                    <p class="proile-rating">AGE : <span>'.$row['age'].'</span></p>
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
+                                </li>
+                               
+                            </ul>
                         </div>
                     </div>
-                  
+                    <div class="col-md-2">
+                       
+                        <a href="update_profile2.php" class="profile-edit-btn">Edit profile</a>
+
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4">
                         <div class="profile-work">
-                            <p>Job location</p>
-                            Dhaka
-                        
-                            <p>salary</p>
-                            5000
-                         
-                          <p>Job type</p>
-                          Part time
-                       
+                            <p>Schooll name</p>
+                          '.$row['school'].'
+                            <p>Collage name</p>
+                          '.$row['collage'].'
+                          <p>University name</p>
+                          '.$row['uni_name'].'
                         </div>
                     </div>
                     <div class="col-md-8 mt-n5">
@@ -139,10 +243,10 @@
                            
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <label>Company Id</label>
+                                                <label>User Id</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <p>23</p>
+                                                <p>'.$row['user_id'].'</p>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -150,7 +254,7 @@
                                                 <label>Name</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <p>Brain station 23 </p>
+                                                <p>'.$row['first_name'].' '.$row['last_name'].'</p>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -158,63 +262,60 @@
                                                 <label>Email</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <p>brain@gmail.comp</p>
+                                                <p>'.$row['email'].'</p>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <label>Salary</label>
+                                                <label>SSC GPA</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <p>5000</p>
-                                            </div>
-                                        </div>
-                                      
-                                         <div class="row">
-                                            <div class="col-md-6">
-                                                <label>vacancy</label>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p>5</p>
+                                                <p>'.$row['ssc_gpa'].'</p>
                                             </div>
                                         </div>
-                                         <div class="row">
+                                        <div class="row">
                                             <div class="col-md-6">
-                                                <label>Job description</label>
+                                                <label>HSC GPA</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <p>Vestibulum volutpat pretium libero. Phasellus tempus. Maecenas ullamcorper, dui et placerat feugiat, eros pede varius nisi, condimentum viverra felis nunc et lorem. Etiam sit amet orci eget eros faucibus tincidunt. Quisque libero metus, condimentum nec, tempor a, commodo mollis, magna.</p>
+                                                <p>'.$row['hsc_gpa'].'</p>
                                             </div>
                                         </div>
                                          <div class="row">
                                             <div class="col-md-6">
-                                                <label>Job expectation</label>
+                                                <label>Undergrad Cgpa</label>
                                             </div>
                                             <div class="col-md-6">
-                                                <p>Vestibulum dapibus nunc ac augue. Nullam vel sem. Aenean massa. Donec id justo. Fusce neque.
-
-Vestibulum ullamcorper mauris at ligula. Aenean imperdiet. Vestibulum volutpat pretium libero. Maecenas ullamcorper, dui et placerat feugiat, eros pede varius nisi, condimentum viverra felis nunc et lorem. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce id purus.</p>
+                                                <p>'.$row['uni_cgpa'].'</p>
+                                            </div>
+                                        </div>
+                                         <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Current Job</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p>'.$row['curent_job'].'</p>
+                                            </div>
+                                        </div>
+                                         <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Previous Job</label>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p>'.$row['previous'].'</p>
                                             </div>
                                         </div>
                             </div>
-                         
-
                        
                    
-                </div>
-                  <div class='col-md-8'>
+                </div>'
+                      ;
+          }
 
-                                 <a class='btn btn-primary btn-block'  href='#'>Apply for the job</a>
-                                 </div>
-                            
-
-         
+                        ?>
                          </div>
             </form>           
         </div>
-
-
-
 
               </div>
                 </div>
@@ -224,7 +325,8 @@ Vestibulum ullamcorper mauris at ligula. Aenean imperdiet. Vestibulum volutpat p
 
  <script src="js/core.min.js"></script>
 
-   
+    <!-- Serch -->
+    <script src="search/search.js"></script>
 
     <!-- custom scripts -->
     <script src="js/main.js"></script>
